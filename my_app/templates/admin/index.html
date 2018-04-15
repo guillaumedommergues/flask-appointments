@@ -1,0 +1,13 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+{% if current_user.name %}
+<h5>Hi {{current_user.name }}</h5>
+<div class="container-fluid"><a class="btn btn-primary" href="{{url_for('logout')}}">logout</a></div>
+{% if current_user.has_role('end-user') or current_user.has_role('manager') %}
+<div class="container-fluid"><a class="btn btn-primary" href="{{url_for('profile')}}">Profile</a></div>
+{% endif %}
+{% else %}
+<h5>Please log in!</h5>
+<div class="container-fluid"><a class="btn btn-primary" href="{{url_for_security('login')}}">login</a></div>
+{% endif %}
+{% endblock %}

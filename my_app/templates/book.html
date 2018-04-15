@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Required meta tags -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+<!-- Custom CSS -->
+<style media="screen" type="text/css">
+html { font-size: 100%; /* font-size 1em = 16px on default browser settings */ } 
+@media screen and (min-width:632px) { .buffer {height:20px;}}
+.buffer {height:5px;}
+.electric-btn { border:1px solid #369ff4; background-color:#369ff4; color:white;height:20px; vertical-align: middle; padding: 0px; font-size: 14px; width:100%; height:100%;}
+.electric-btn:hover, .electric-btn:focus { border-color: #2b7fc3; background-color: #2b7fc3;}
+.book-button {display: inline-block; border:1px solid #369ff4; background-color:#369ff4; color:white; padding: 1px;}
+@media screen and (min-width:632px) { .book-container {position: relative;} .book-button{position: absolute; bottom: 10px; left: 10px;}}
+tr {line-height:25px, min-height:25px; height:25px; padding:0px;}
+td {padding:0px !important;}
+.rc-anchor-content {transform:scale(0.50);-webkit-transform:scale(0.50);transform-origin:0 0;-webkit-transform-origin:0 0;}
+</style>
+</head>
+
+
+
+<body>
+<h6>Tell us when you want to book an appointment!</h6>
+
+<div class="container-fluid buffer"></div>
+<div class="container-fluid buffer"></div>
+<div class="container-fluid buffer"></div>
+<div class="container-fluid buffer"></div>
+<div class="container-fluid">
+{% for user_record in data %}
+<div class="row" id="{{"row"~user_record['branch_id']}}"> <!-- First row - the box for this user -->
+<!-- First box - user info -->
+<div class="col-sm-3">
+<h4>{{user_record['branch']}}</h4>
+<h6>{{user_record['branch_name']}}</h6>
+<h6>{{user_record['branch_address']}}</h6>
+</div>
+
+<!-- Second box - Booking info -->
+<div class="col-sm-8">
+<table class="table table-responsive table-sm">
+<thead>
+{% for day in user_record['branch_apt_days'] %}
+<th scope="col"><h6>{{day.strftime("%a")}}</h6><p>{{day.strftime("%b%d")}}</p></th>
+{% endfor %}
+</thead>
+<tbody>
+{% for hour in user_record['branch_apt'] %}
+<tr>
+{% for appointment in hour %}
+<td>
+{% if appointment.bookable_booked %}
+<button class="btn btn-primary apt-radio electric-btn" data-user_id="{{appointment.user_id}}" data-user_name="{{user_record['branch']}}" data-date="{{appointment.date}}" data-date_formatted="{{appointment.date.strftime("%b %d")}}" data-time="{{appointment.time}}" data-time_formatted="{{appointment.time.strftime("%I:%M%p")}}" id="{{appointment.date ~ "at" ~ appointment.time ~ "at" ~ user_record['branch_id']}}">{{appointment.time.strftime("%I:%M%p")}}</button>
+{% endif %}
+</td>
+{% endfor %}
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+
+</div> <!-- ends the row -->
+<div class="container-fluid buffer"></div>
+<div class="container-fluid buffer"></div>
+<div class="container-fluid buffer"></div>
+<div class="container-fluid buffer"></div>
+{% endfor %}
+
+
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">You're almost there!</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action="{{ url_for('book', what='placeholder', where='placeholder', when='placeholder') }}" novalidate>
+
+<h6 class="" id="modal-date-user-reminder"></h6>
+<div class="form-group">
+{{ form.wtf_name.label(class="form-control-label") }}
+{{ form.wtf_name(class="form-control") }}
+</div>
+<div class="form-group">
+<label for="phone">{{ form.wtf_phone.label(class="form-control-label") }}</label>
+{{ form.wtf_phone(class="form-control" , maxLength=10 ) }}
+<div class="invalid-feedback" id="phone_feedback" style="display:none">Please enter your 10 digit phone number</div>
+
+{{ form.wtf_topic(class="form-control", style="display:none") }}
+{{ form.wtf_user_id(class="form-control", style="display:none") }}
+{{ form.wtf_date(class="form-control", style="display:none") }}
+{{ form.wtf_time(class="form-control", style="display:none") }}
+<div class="container-fluid buffer"></div>
+{{ form.recaptcha(class="recaptcha-style") }}
+
+
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary" style="display:none" id="book-button">Book</button>
+    </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</div><!-- ends the container -->
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <!-- https://developers.google.com/speed/libraries/ -->
+ 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+<script>
+window.addEventListener( "pageshow", function ( event ) {
+  var historyTraversal = event.persisted || ( typeof window.performance != "undefined" && window.performance.navigation.type === 2 );
+  if ( historyTraversal ) {
+    // Handle page restore.
+    window.location.reload();
+  }
+});
+</script>
+
+<script>
+$(document).ready(function () {
+  $("#wtf_topic").val("{{what}}");
+
+//Javascript to open modal and pass user/time info to the form
+        $('.apt-radio').on('click', function() {
+            $('#myModal').modal('show');
+            var modal_title= "Tell us about yourself and meet with one of our bankers<br /><small>"+$(this).data('date_formatted')+" at "+$(this).data('time_formatted')+"</small>";
+            $('#modal-date-user-reminder').html(modal_title);
+            // $("#book_user_id").val($(this).data('user_id'));
+            $("#wtf_user_id").val($(this).data('user_id'));
+            console.log($("#wtf_user_id").val());
+            // $("#book_date").val($(this).data('date'));
+            $("#wtf_date").val($(this).data('date'));
+            // $("#book_time").val($(this).data('time'));
+            $("#wtf_time").val($(this).data('date')+"-"+$(this).data('time'));
+        });
+//Javascript to validate form
+        function show_button_if_valid_form(){
+            console.log("evaluating");
+            var name_input_validated=$.trim($('#wtf_name').val()).length>0;
+            var phone_input_validated=$.trim($('#wtf_phone').val()).length==10;
+            if (name_input_validated && phone_input_validated) { $("#book-button").show(); } else { $("#book-button").hide(); }
+          };
+        $('#wtf_name').on('input', function() {
+          show_button_if_valid_form()
+          var name_input_validated=$.trim($(this).val()).length>0;
+          if (name_input_validated) {$(this).removeClass("is-invalid").addClass("is-valid");} else {$(this).removeClass("is-valid").addClass("is-invalid");} 
+        });
+        $('#wtf_phone').on('input', function() {
+          show_button_if_valid_form()
+          var phone_input_validated=$.trim($(this).val()).length==10;
+          if (phone_input_validated) {$(this).removeClass("is-invalid").addClass("is-valid");$('#phone_feedback').hide();} else {$(this).removeClass("is-valid").addClass("is-invalid"); $('#phone_feedback').show(); }
+        });
+        $('#myModal').on('show.bs.modal',show_button_if_valid_form());
+
+    $("#wtf_phone").keydown(function (e) {
+        // Allow: backspace, delete, tab, escape, enter and .
+        if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||
+             // Allow: Ctrl+A, Command+A
+            (e.keyCode === 65 && (e.ctrlKey === true || e.metaKey === true)) || 
+             // Allow: home, end, left, right, down, up
+            (e.keyCode >= 35 && e.keyCode <= 40)) {
+                 // let it happen, don't do anything
+                 return;
+        }
+        // Ensure that it is a number and stop the keypress
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+            e.preventDefault();
+        }
+    });
+
+
+//ends the doc ready function
+});
+
+
+
+
+
+    </script>
+
+  </body>
+</html>

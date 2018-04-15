@@ -1,0 +1,17 @@
+# To specify regular requests to the app
+
+cron:
+- description: daily adding tbd appointments
+  url: /cron/add_appointments
+  schedule: every day 08:00
+  timezone: Pacific/Honolulu
+
+- description: daily reminders for the appointments of the next dat
+  url: /cron/send_reminders_hi
+  schedule: every day 11:00
+  timezone: Pacific/Honolulu
+
+- description: daily reminders for the appointments of the next dat
+  url: /cron/send_reminders_wp
+  schedule: every day 08:00
+  timezone: Pacific/Honolulu

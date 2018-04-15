@@ -1,0 +1,39 @@
+#This file specifies your Python application's runtime configuration
+#including URL routing, versions, static file uploads, etc. See
+#https://developers.google.com/appengine/docs/python/config/appconfig
+#for details.
+
+# general info
+runtime: python27
+api_version: 1
+threadsafe: yes
+
+# Handlers define how to route requests to your application.
+handlers:
+# Directs all routes to main.app object
+# Require admin priviledge to access cron files
+- url: /cron/.*
+  script: my_app.app
+  login: admin
+- url: .*  
+  script: my_app.app
+
+# built in libraries (will not need to be in the lib directory)
+# https://cloud.google.com/appengine/docs/standard/python/tools/using-libraries-python-27
+libraries:
+- name: six
+  version: "1.9.0"
+- name: MySQLdb
+  version: "latest"
+- name: ssl
+  version: 2.7.11
+
+# infrastructure specification
+# this will keep the app free for limited usage
+instance_class: F1
+automatic_scaling:
+  min_idle_instances: 0
+  max_idle_instances: 1  # default value
+  min_pending_latency: 100ms  # default value
+  max_pending_latency: 100ms
+  max_concurrent_requests: 50

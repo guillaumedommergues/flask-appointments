@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Required meta tags -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+<style media="screen" type="text/css">
+html { font-size: 100%; /* font-size 1em = 16px on default browser settings */ } 
+@media screen and (min-width:632px) { .buffer {height:20px;}}
+.buffer {height:5px;}
+.change-pwd {width: 50%;}
+</style>
+</head>
+
+
+
+
+<body>
+
+
+<div class="buffer"></div>
+<div class="container-fluid"><h1>Aloha {{user_record['user']}}</h1></div>
+<div class="buffer"></div>
+<div class="buffer"></div>
+<div class="buffer"></div>
+<div class="buffer"></div>
+
+<div class="container-fluid">
+<h6>Please tell us when you are available</h6>
+<table>
+<tbody>
+<tr><td><button class="btn btn-success">Booked!</button></td></tr>
+<tr><td><button class="btn btn-primary">Available for booking</button></td></tr>
+<tr><td><button class="btn btn-secondary">Unavailable / TBD</button></td></tr>
+</tbody>
+</table>
+<div class="buffer"></div>
+<div class="buffer"></div>
+<div class="buffer"></div>
+<div class="buffer"></div>
+
+
+<table>
+{% for day in user_record['user_apt_days'] %}
+<th><h6>{{day.strftime("%a")}}</h6><p>{{day.strftime("%b%d")}}</p></th>
+{% endfor %}
+
+
+{% for hour in user_record['user_apt'] %}
+<tr>
+{% for appointment in hour %}
+<td>
+<button class="btn apt-check {{"btn-success" if appointment.bookable_booked == "booked"}} {{"btn-primary" if appointment.bookable_booked == "bookable"}}{{"btn-secondary" if appointment.bookable_booked == "tbd"}}"
+data-status="{{appointment.bookable_booked}}"
+data-date="{{appointment.date}}"
+data-time="{{appointment.time}}"
+data-booked_by_name="{{appointment.booked_by_name}}"
+data-booked_by_phone="{{appointment.booked_by_phone}}"
+data-topic="{{appointment.topic}}"
+id="{{appointment.date ~ "at" ~ appointment.time.strftime("%I-%M%p") ~ "status" ~ user_record['bookable_booked']}}">{{appointment.time.strftime("%I:%M%p")}}
+</button>
+</td>
+{% endfor %}
+</tr>
+{% endfor %}
+</table>
+
+<div class="card" id="appointment-detail" style="display:none"><div class="card-body" id="appointment-detail-body"></div></div>
+<form method="POST" action="{{ url_for('profile') }}">
+<input id="submit_check_val" name="submit_check_val" style="display:none">
+<div class="buffer"></div>
+<div class="buffer"></div>
+<button class="btn btn-danger book-button"  style="display:none" id="Submit">Submit</button>
+</form>
+
+
+
+
+<div class="buffer"></div>
+<div class="buffer"></div>
+<form method="POST" action="{{ url_for('logout') }}">
+<button class="btn btn-danger"  type = 'submit' >Logout</button>
+</form>
+</div><!-- ends the first container -->
+
+
+<div class="buffer"></div>
+<div class="buffer"></div>
+<div class="buffer"></div>
+<div class="buffer"></div>
+<div class="buffer"></div>
+<div class="buffer"></div>
+<div class="container change-pwd float-left">
+<h6>Change your password if needed</h6>
+<form method="POST" action="{{ url_for('change_password') }}">
+    {{ form.csrf_token }}
+    {{ form.user_id(style="display:None", value=user_record['user_id'] )}}
+    {{ form.old_pwd.label(class="form-control-label") }}
+    {{ form.old_pwd(class="form-control ", id="what") }}
+    {{ form.new_pwd_1.label(class="form-control-label") }}
+    {{ form.new_pwd_1(class="form-control ", id="what") }}
+    {{ form.new_pwd_2.label(class="form-control-label") }}
+    {{ form.new_pwd_2(class="form-control ", id="what") }}
+<div class="buffer"></div>
+<div class="buffer"></div>
+<button class="btn btn-danger"  type = 'submit' >Change Password</button>
+</form>
+</div><!-- ends the second container -->
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+<script>
+$( document ).ready(function(){
+
+        var apt_cliked_type=null;
+        var apt_cliked_id_array=[];
+        $('.apt-check').on('click', function() {
+            if ($(this).data('status') == "booked" ) // clicked on a "booked" appointment
+                {$('#Submit').hide();
+                var appointment_info="Booked by: " + $(this).data('booked_by_name') + "<br /> Phone number: " + $(this).data('booked_by_phone') + "<br /> for: " + $(this).data('topic')
+                $("#appointment-detail").show();
+                $("#appointment-detail-body").html(appointment_info);
+                console.log(appointment_info)
+            }  
+                else{
+                    $("#appointment-detail").hide();
+            if ($(this).data('status') == null || $(this).data('status') != apt_cliked_type){ // nothing clicked or clicked on a new type
+                console.log("different")
+                apt_cliked_type=$(this).data('status');
+                $('.apt-check').removeClass('active');
+                $(this).addClass('active');
+                apt_cliked_id_array=[];
+            }
+            else{
+                console.log("same");
+            }
+            var apt_id=$(this).attr('id');
+            if ($.inArray(apt_id,apt_cliked_id_array)<0) {apt_cliked_id_array.push(apt_id);$(this).addClass('active');} else {index = apt_cliked_id_array.indexOf(apt_id);apt_cliked_id_array.splice(index, 1);$(this).removeClass('active');} // if this was already clicked, remove the active class and remove from list. Else add!
+            console.log(apt_cliked_id_array)
+
+
+            if (apt_cliked_id_array.length==0) {$('#Submit').hide();} else {
+                    $('#Submit').show();
+                    var data=[];
+                    for (var i = 0; i < apt_cliked_id_array.length; i++) {
+                        data.push({'status': $('#'+apt_cliked_id_array[i]).data('status'), 'time': $('#'+apt_cliked_id_array[i]).data('time'), 'date': $('#'+apt_cliked_id_array[i]).data('date'), 'user_id': {{user_record['user_id']}}});}
+                    $('#submit_check_val').val(JSON.stringify(data));
+                    console.log($('#submit_check_val').val());
+                    console.log(apt_cliked_type);
+                    if (apt_cliked_type=='bookable') {$('#Submit').text('Make time slots unavailable') } else {$('#Submit').text('Make time slots available')}
+                }
+        } // ends the case tbd/bookable case
+        }); // ends the cliked event listener
+
+});//ends the document ready functio 
+
+    </script>
+
+  </body>
+</html>

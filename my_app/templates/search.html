@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Required meta tags -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+<!-- Custom CSS -->
+<style media="screen" type="text/css">
+html { font-size: 100%; /* font-size 1em = 16px on default browser settings */ } 
+@media screen and (min-width:632px) { .buffer {height:20px;}}
+.buffer {height:5px;}
+</style>
+</head>
+
+
+<body>
+<div class="container-fluid buffer"></div>
+<div class="container-fluid buffer"></div>
+<div class="container-fluid buffer"></div>
+
+<div class="container-fluid buffer">
+<div class="jumbotron">
+  {% if form.wtf_what %}
+    <form class="" method="POST" action="{{url_for('search_what')}}">
+  <h1 class="display-3">I need:</h1>
+    {{ form.wtf_what.label(class="form-control-label") }}
+    {{ form.wtf_what(class="form-control ", id="what") }}
+  {% endif %}
+  {% if form.wtf_where %}
+    <form class="" method="POST" action="{{url_for('search_where', what=what)}}">
+      <p> for my {{what}}</p>
+  <h1 class="display-3">I'd like to go:</h1>
+    {{ form.wtf_where.label(class="form-control-label") }}
+    {{ form.wtf_where(class="form-control ", id="where") }}
+  {% endif %}
+  {% if form.wtf_when %}
+    <form class="" method="POST" action="{{url_for('search_when', what=what, where=where)}}">
+      <p> for my {{what}} at {{where}}</p>
+  <h1 class="display-3">I'd like to meet around:</h1>
+    {{ form.wtf_when.label(class="form-control-label") }}
+    {{ form.wtf_when(class="form-control ", id="when") }}
+  {% endif %}
+
+
+  
+
+ <hr class="my-4">
+  <p></p>
+
+
+  <p class="lead"><button type="submit" class="btn btn-primary">Go!</button></p>
+
+</form>
+
+
+</div><!-- ends jumbotron -->
+</div><!-- ends container fluid -->
+
+
+  </body>
+</html>
