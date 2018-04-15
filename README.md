@@ -9,10 +9,11 @@ pip install -t lib -r requirements.txt
 
 ## Tests
 ```
-python test.py
+python tests.py
 ```
 
 ## Deployment
+from the Google Cloud SDK Shell
 ```
 gcloud app deploy --project <your-project-name> app.yaml
 ```
