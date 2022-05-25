@@ -28,7 +28,7 @@ Jinja2==2.9.6
 MarkupSafe==1.0
 passlib==1.7.1
 pycparser==2.18
-PyJWT==1.5.3
+PyJWT==2.4.0
 pyOpenSSL==17.3.0
 python-dateutil==2.6.1
 pytz==2017.2
